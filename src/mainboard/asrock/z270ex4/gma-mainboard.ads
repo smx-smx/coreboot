@@ -10,8 +10,8 @@ private package GMA.Mainboard is
 
 	ports : constant Port_List :=
 		(HDMI1, -- mainboard DVI port
+		 HDMI2,
 		 HDMI3, -- mainboard HDMI port
-		 Analog,
 		 others => Disabled);
 
 end GMA.Mainboard;
