@@ -263,6 +263,8 @@ int print_epbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_Y:
 	case PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_U_Q:
 	case PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_E3:
+	case PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_7TH_GEN_D_Q:
 	case PCI_DEVICE_ID_INTEL_CORE_8TH_GEN_U_1:
 	case PCI_DEVICE_ID_INTEL_CORE_8TH_GEN_U_2:
 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
