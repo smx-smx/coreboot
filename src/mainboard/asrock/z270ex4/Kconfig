@@ -24,8 +24,11 @@ config DISABLE_HECI1_AT_PRE_BOOT
 config MAINBOARD_DIR
 	default "asrock/z270ex4"
 
+config MAINBOARD_VENDOR
+	default "ASRock"
+
 config MAINBOARD_PART_NUMBER
-	default "Z270EX4"
+	default "Z270 Extreme4"
 
 config PRERAM_CBMEM_CONSOLE_SIZE
 	hex
