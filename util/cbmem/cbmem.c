@@ -33,6 +33,10 @@
 #include <x86intrin.h>
 #endif
 
+#ifdef _WIN32
+#include "windows_driver.h"
+#endif
+
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 typedef uint8_t u8;
@@ -58,7 +62,9 @@ static int verbose = 0;
 #define debug(x...) if(verbose) printf(x)
 
 /* File handle used to access /dev/mem */
+#ifndef _WIN32
 static int mem_fd;
+#endif
 static struct mapping lbtable_mapping;
 
 /* TSC frequency from the LB_TAG_TSC_INFO record. 0 if not present. */
@@ -71,6 +77,7 @@ static void die(const char *msg)
 	exit(1);
 }
 
+#ifndef _WIN32
 static unsigned long long system_page_size(void)
 {
 	static unsigned long long page_size;
@@ -80,6 +87,7 @@ static unsigned long long system_page_size(void)
 
 	return page_size;
 }
+#endif
 
 static inline size_t size_to_mib(size_t sz)
 {
@@ -97,6 +105,30 @@ static void *mapping_virt(const struct mapping *mapping)
 	return v + mapping->offset;
 }
 
+#ifdef _WIN32
+static void windows_atexit(void){
+	driver_deinit();
+}
+
+static void *map_memory_with_prot(struct mapping *mapping,
+				  unsigned long long phys, size_t sz, int prot)
+{
+	(void)(prot);
+
+	uint8_t *buf = NULL;
+	buf = driver_phys_read(phys, sz);
+	if(buf == NULL){
+		return NULL;
+	}
+
+	mapping->virt = buf;
+	mapping->offset = 0;
+	mapping->virt_size = sz;
+	mapping->size = sz;
+	mapping->phys = phys;
+	return buf;
+}
+#else
 /* Returns virtual address on success, NULL on error. mapping is filled in. */
 static void *map_memory_with_prot(struct mapping *mapping,
 				  unsigned long long phys, size_t sz, int prot)
@@ -138,6 +170,7 @@ static void *map_memory_with_prot(struct mapping *mapping,
 
 	return mapping_virt(mapping);
 }
+#endif
 
 /* Convenience helper for the common case of read-only mappings. */
 static const void *map_memory(struct mapping *mapping, unsigned long long phys,
@@ -153,7 +186,11 @@ static int unmap_memory(struct mapping *mapping)
 	if (mapping->virt == NULL)
 		return -1;
 
+#ifdef _WIN32
+	free(mapping->virt);
+#else
 	munmap(mapping->virt, mapping->virt_size);
+#endif
 	mapping->virt = NULL;
 	mapping->offset = 0;
 	mapping->virt_size = 0;
@@ -1462,6 +1499,7 @@ static char *dt_find_compat(const char *parent, const char *compat,
 }
 #endif /* defined(__arm__) || defined(__aarch64__) */
 
+
 int main(int argc, char** argv)
 {
 	int print_defaults = 1;
@@ -1580,12 +1618,20 @@ int main(int argc, char** argv)
 		print_usage(argv[0], 1);
 	}
 
+#ifdef _WIN32
+	if(driver_init() != 0){
+		fprintf(stderr, "Failed to gain memory access\n");
+		return 1;
+	}
+	atexit(windows_atexit);
+#else
 	mem_fd = open("/dev/mem", timestamp_id ? O_RDWR : O_RDONLY, 0);
 	if (mem_fd < 0) {
 		fprintf(stderr, "Failed to gain memory access: %s\n",
 			strerror(errno));
 		return 1;
 	}
+#endif
 
 #if defined(__arm__) || defined(__aarch64__)
 	int addr_cells, size_cells;
@@ -1681,6 +1727,10 @@ int main(int argc, char** argv)
 
 	unmap_memory(&lbtable_mapping);
 
+#ifdef _WIN32
+	driver_deinit();
+#else
 	close(mem_fd);
+#endif
 	return 0;
 }

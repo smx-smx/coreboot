@@ -14,6 +14,13 @@ CPPFLAGS += -include $(ROOT)/commonlib/bsd/include/commonlib/bsd/compiler.h
 
 OBJS = $(PROGRAM).o
 
+OS = $(shell uname -o)
+
+ifeq ($(OS),Cygwin)
+OBJS += windows_driver.o
+CFLAGS += -D_WIN32
+endif
+
 all: $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
