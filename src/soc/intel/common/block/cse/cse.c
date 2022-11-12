@@ -649,7 +649,19 @@ bool is_cse_devfn_visible(unsigned int devfn)
 
 bool is_cse_enabled(void)
 {
-	return is_cse_devfn_visible(PCH_DEVFN_CSE);
+	if(!is_cse_devfn_visible(PCH_DEVFN_CSE)) {
+		return false;
+	}
+	union me_hfsts1 hfs1;
+	hfs1.data = me_read_config32(PCI_ME_HFSTS1);
+	switch(hfs1.fields.operation_mode) {
+		case ME_HFS_MODE_DEBUG:
+		case ME_HFS_MODE_DIS:
+		case ME_HFS_MODE_OVER_JMPR:
+		case ME_HFS_MODE_OVER_MEI:
+			return false;
+	}
+	return true;
 }
 
 uint32_t me_read_config32(int offset)
