@@ -36,4 +36,7 @@ void mainboard_memory_init_params(FSPM_UPD *mupd)
 
 	/* use virtual channel 1 for the dmi interface of the PCH */
 	mupd->FspmTestConfig.DmiVc1 = 1;
+
+	printk(BIOS_DEBUG, "Going to FSP!\n");
+
 }

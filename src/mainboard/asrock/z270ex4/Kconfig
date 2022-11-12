@@ -18,9 +18,6 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_LIBGFXINIT
 	select SOC_INTEL_COMMON_BLOCK_HDA_VERB
 
-config DISABLE_HECI1_AT_PRE_BOOT
-	default y
-
 config MAINBOARD_DIR
 	default "asrock/z270ex4"
 
