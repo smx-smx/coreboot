@@ -926,7 +926,7 @@ static int parse_loglevel(char *arg, int *print_unknown_logs)
 static void dump_console(enum console_print_type type, int max_loglevel, int print_unknown_logs)
 {
 	const struct cbmem_console *console_p;
-	char *console_c;
+	unsigned char *console_c;
 	size_t size, cursor, previous;
 	struct mapping console_mapping;
 
@@ -1005,7 +1005,7 @@ static void dump_console(enum console_print_type type, int max_loglevel, int pri
 			assert(res == 0);
 
 			/* Keep looking for matches so we find the last one. */
-			while (!regexec(&re, console_c + cursor, 1, &match, 0)) {
+			while (!regexec(&re, (char *)(console_c + cursor), 1, &match, 0)) {
 				previous = cursor;
 				cursor += match.rm_so + 1;
 			}
