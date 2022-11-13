@@ -59,15 +59,11 @@ static struct device_operations pci_domain_ops = {
 	.ops_pci          = &pci_dev_ops_pci,
 };
 
-static void cpu_bus_init(struct device *dev)
-{
-	initialize_cpus(dev->link_list);
-}
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = noop_read_resources,
 	.set_resources    = noop_set_resources,
-	.init             = cpu_bus_init,
+	.init             = mp_cpu_bus_init,
 };
 
 static void enable_dev(struct device *dev)
@@ -75,8 +71,7 @@ static void enable_dev(struct device *dev)
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
-	}
-	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
 	}
 }

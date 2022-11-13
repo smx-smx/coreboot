@@ -6,7 +6,6 @@ config BOARD_GOOGLE_BRYA_COMMON
 	select DRIVERS_I2C_GENERIC
 	select DRIVERS_I2C_HID
 	select DRIVERS_I2C_NAU8825
-	select DRIVERS_I2C_SX9324
 	select DRIVERS_INTEL_DPTF
 	select DRIVERS_INTEL_DPTF_SUPPORTS_TPCH
 	select DRIVERS_INTEL_PMC
@@ -150,6 +149,7 @@ config DRIVER_TPM_I2C_BUS
 	default 0x0 if BOARD_GOOGLE_YAVIKS
 	default 0x1 if BOARD_GOOGLE_ZYDRON
 	default 0x1 if BOARD_GOOGLE_LISBON
+	default 0x1 if BOARD_GOOGLE_GLADIOS
 
 config DRIVER_TPM_I2C_ADDR
 	hex
@@ -218,6 +218,7 @@ config MAINBOARD_PART_NUMBER
 	default "Lisbon" if BOARD_GOOGLE_LISBON
 	default "Zydron" if BOARD_GOOGLE_ZYDRON
 	default "Gladios" if BOARD_GOOGLE_GLADIOS
+	default "Marasov" if BOARD_GOOGLE_MARASOV
 
 config VARIANT_DIR
 	default "brya0" if BOARD_GOOGLE_BRYA0
@@ -258,6 +259,7 @@ config VARIANT_DIR
 	default "lisbon" if BOARD_GOOGLE_LISBON
 	default "zydron" if BOARD_GOOGLE_ZYDRON
 	default "gladios" if BOARD_GOOGLE_GLADIOS
+	default "marasov" if BOARD_GOOGLE_MARASOV
 
 config VBOOT
 	select VBOOT_EARLY_EC_SYNC if !BOARD_GOOGLE_BASEBOARD_NISSA

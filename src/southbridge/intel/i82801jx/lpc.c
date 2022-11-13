@@ -36,7 +36,7 @@ static void i82801jx_enable_apic(struct device *dev)
 	/* Lock maximum redirection entries (MRE), R/WO register. */
 	ioapic_lock_max_vectors(VIO_APIC_VADDR);
 
-	setup_ioapic(VIO_APIC_VADDR, 2); /* ICH7 code uses id 2. */
+	register_new_ioapic_gsi0(VIO_APIC_VADDR);
 }
 
 static void i82801jx_enable_serial_irqs(struct device *dev)
@@ -370,8 +370,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-				2, IO_APIC_ADDR, 0);
+	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
 
 	/* LAPIC_NMI */
 	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)

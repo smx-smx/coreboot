@@ -33,7 +33,7 @@
  */
 static void i82801gx_enable_ioapic(struct device *dev)
 {
-	setup_ioapic(VIO_APIC_VADDR, 0x02);
+	register_new_ioapic_gsi0(VIO_APIC_VADDR);
 }
 
 static void i82801gx_enable_serial_irqs(struct device *dev)
@@ -355,7 +355,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current = acpi_create_madt_lapics(current);
 
 	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2, IO_APIC_ADDR, 0);
+	current += acpi_create_madt_ioapic_from_hw((acpi_madt_ioapic_t *)current, IO_APIC_ADDR);
 
 	/* LAPIC_NMI */
 	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)

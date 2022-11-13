@@ -37,6 +37,7 @@ config BOARD_SPECIFIC_OPTIONS
 	select MAINBOARD_HAS_CHROMEOS
 	select MAINBOARD_HAS_TPM2
 	select SOC_AMD_MENDOCINO
+	select SOC_AMD_COMMON_BLOCK_I2C3_TPM_SHARED_WITH_PSP
 	select SOC_AMD_COMMON_BLOCK_USE_ESPI
 	select TPM_GOOGLE_TI50
 	select PCIEXP_ASPM
@@ -107,7 +108,8 @@ config VBOOT_STARTS_IN_BOOTBLOCK
 
 if !EM100	# EM100 defaults in soc/amd/common/blocks/spi/Kconfig
 config EFS_SPI_READ_MODE
-	default 2          # Dual IO (1-1-2)
+	default 2 if BOARD_GOOGLE_SKYRIM          # Dual IO (1-1-2)
+	default 4                                 # Dual IO (1-2-2)
 
 config EFS_SPI_SPEED
 	default 0	# 66MHz

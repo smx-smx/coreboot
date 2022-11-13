@@ -12,6 +12,8 @@
 #define EC_OEM_VARIABLE_DATA_MASK	0x7
 #define INT3400_ODVP_CHANGED		0x88
 
+#define ACPI_NOTIFY_CROS_EC_PANIC	0xB0
+
 // Mainboard specific throttle handler
 #ifdef DPTF_ENABLE_CHARGER
 External (\_SB.DPTF.TCHG, DeviceObj)
@@ -56,6 +58,7 @@ Device (EC0)
 		CHGL, 8,	// Charger Current Limit
 		TBMD, 1,	// Tablet mode
 		DDPN, 3,	// Device DPTF Profile Number
+		STTB, 1,	// Switch thermal table by body detection status
 		// DFUD must be 0 for the other 31 values to be valid
 		Offset (0x0a),
 		DFUD, 1,	// Device Features Undefined
@@ -406,6 +409,13 @@ Device (EC0)
 		 * low charge.
 		 */
 		\PNOT ()
+	}
+
+	// EC Panic
+	Method (_Q18, 0, NotSerialized)
+	{
+		Printf ("EC: PANIC")
+		Notify (CREC, ACPI_NOTIFY_CROS_EC_PANIC)
 	}
 
 	// MKBP interrupt.

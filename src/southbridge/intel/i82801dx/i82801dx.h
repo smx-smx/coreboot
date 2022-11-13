@@ -19,7 +19,6 @@
 
 void i82801dx_enable(struct device *dev);
 void i82801dx_early_init(void);
-void aseg_smm_lock(void);
 
 #endif
 
@@ -72,6 +71,7 @@ void aseg_smm_lock(void);
 #define PIRQG_ROUT	0x6A
 #define PIRQH_ROUT	0x6B
 #define COM_DEC         0xE0
+#define GEN1_DEC        0xE4
 #define LPC_EN          0xE6
 #define FUNC_DIS        0xF2
 
@@ -89,7 +89,7 @@ void aseg_smm_lock(void);
 #define MTT             0x70
 #define PCI_MAST_STS    0x82
 
-#define RTC_FAILED      (1 <<2)
+#define RTC_FAILED      (1 << 2)
 
 #define PM1_STS		0x00
 #define   WAK_STS	(1 << 15)

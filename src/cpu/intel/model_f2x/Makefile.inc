@@ -1,5 +1,4 @@
 subdirs-y += ../common
-subdirs-y += ../hyperthreading
 
 ramstage-y += model_f2x_init.c
 

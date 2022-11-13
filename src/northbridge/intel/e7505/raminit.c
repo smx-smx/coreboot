@@ -354,7 +354,7 @@ static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
 
 	return pgsz;
 
-      hw_err:
+hw_err:
 	die(SPD_ERROR);
 	return pgsz;		// Never reached
 }
@@ -991,7 +991,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
 
 	return;
 
-      hw_err:
+hw_err:
 	die(SPD_ERROR);
 }
 
@@ -1155,15 +1155,13 @@ hw_err:
  *             addresses of DIMM slots on the mainboard.
  * @param dimm_mask Bitmask of populated DIMMs, spd_get_supported_dimms().
  */
-static void configure_e7501_dram_controller_mode(const struct
-						 mem_controller *ctrl,
+static void configure_e7501_dram_controller_mode(const struct mem_controller *ctrl,
 						 uint8_t dimm_mask)
 {
 	int i;
 
 	// Initial settings
-	uint32_t controller_mode =
-	    pci_read_config32(MCHDEV, DRC);
+	uint32_t controller_mode = pci_read_config32(MCHDEV, DRC);
 	uint32_t system_refresh_mode = (controller_mode >> 8) & 7;
 
 	// Code below assumes that most aggressive settings are in

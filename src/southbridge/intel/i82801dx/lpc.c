@@ -9,9 +9,11 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <option.h>
-#include <pc80/mc146818rtc.h>
-#include <pc80/isa-dma.h>
 #include <pc80/i8259.h>
+#include <pc80/isa-dma.h>
+#include <pc80/mc146818rtc.h>
+#include <types.h>
+
 #include "chip.h"
 #include "i82801dx.h"
 
@@ -50,7 +52,7 @@ static void i82801dx_enable_ioapic(struct device *dev)
 	pci_write_config32(dev, GEN_CNTL, reg32);
 	printk(BIOS_DEBUG, "IOAPIC Southbridge enabled %x\n", reg32);
 
-	setup_ioapic(VIO_APIC_VADDR, 0x02);
+	register_new_ioapic_gsi0(VIO_APIC_VADDR);
 
 	ioapic_set_boot_config(VIO_APIC_VADDR, true);
 }
@@ -96,21 +98,21 @@ static void i82801dx_power_options(struct device *dev)
 
 	reg8 = pci_read_config8(dev, GEN_PMCON_3);
 	reg8 &= 0xfe;
-	switch (pwr_on) {
-		case MAINBOARD_POWER_OFF:
-			reg8 |= 1;
-			state = "off";
-			break;
-		case MAINBOARD_POWER_ON:
-			reg8 &= ~1;
-			state = "on";
-			break;
-		case MAINBOARD_POWER_KEEP:
-			reg8 &= ~1;
-			state = "state keep";
-			break;
-		default:
-			state = "undefined";
+	switch (pwr_on)	{
+	case MAINBOARD_POWER_OFF:
+		reg8 |= 1;
+		state = "off";
+		break;
+	case MAINBOARD_POWER_ON:
+		reg8 &= ~1;
+		state = "on";
+		break;
+	case MAINBOARD_POWER_KEEP:
+		reg8 &= ~1;
+		state = "state keep";
+		break;
+	default:
+		state = "undefined";
 	}
 
 	reg8 &= ~(1 << 3);	/* minimum assertion is 1 to 2 RTCCLK */
@@ -276,12 +278,6 @@ static void lpc_init(struct device *dev)
 	enable_hpet(dev);
 
 	setup_i8259();
-
-	/* Don't allow evil boot loaders, kernels, or
-	 * userspace applications to deceive us:
-	 */
-	if (CONFIG(SMM_LEGACY_ASEG))
-		aseg_smm_lock();
 }
 
 static void i82801dx_lpc_read_resources(struct device *dev)

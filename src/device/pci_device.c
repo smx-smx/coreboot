@@ -408,7 +408,7 @@ static void configure_adjustable_base(const struct device *dev,
 
 	int max_requested_bits = __fls64(size_mask);
 	if (max_requested_bits > CONFIG_PCIEXP_DEFAULT_MAX_RESIZABLE_BAR_BITS) {
-		printk(BIOS_WARNING, "WARNING: Device %s requests a BAR with"
+		printk(BIOS_WARNING, "Device %s requests a BAR with"
 		       " %u bits of address space, which coreboot is not"
 		       " configured to hand out, truncating to %u bits\n",
 		       dev_path(dev), max_requested_bits,
@@ -417,7 +417,7 @@ static void configure_adjustable_base(const struct device *dev,
 	}
 
 	if (!(res->flags & IORESOURCE_PCI64) && max_requested_bits > 32) {
-		printk(BIOS_ERR, "ERROR: Resizable BAR requested"
+		printk(BIOS_ERR, "Resizable BAR requested"
 		       " above 32 bits, but PCI function reported a"
 		       " 32-bit BAR.");
 		return;
@@ -1423,7 +1423,7 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 		max_devfn=0xff;
 	}
 
-	post_code(0x24);
+	post_code(POST_ENTER_PCI_SCAN_BUS);
 
 	if (pci_bus_only_one_child(bus))
 		max_devfn = MIN(max_devfn, 0x07);
@@ -1463,8 +1463,6 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 			devfn += 0x07;
 		}
 	}
-
-	post_code(0x25);
 
 	/*
 	 * Warn if any leftover static devices are found.
@@ -1516,7 +1514,7 @@ void pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	 * side of any bridges that may be on this bus plus any devices.
 	 * Return how far we've got finding sub-buses.
 	 */
-	post_code(0x55);
+	post_code(POST_EXIT_PCI_SCAN_BUS);
 }
 
 typedef enum {

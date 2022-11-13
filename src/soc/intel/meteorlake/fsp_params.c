@@ -375,14 +375,6 @@ static void fill_fsps_misc_power_params(FSP_S_CONFIG *s_cfg,
 	s_cfg->PsOnEnable = 1;
 	/* Enable the energy efficient turbo mode */
 	s_cfg->EnergyEfficientTurbo = 1;
-
-	/*
-	 * UPDATEME: This is WA for HFPGA
-	 * Disable Pch Pm Energy Report
-	 * Energy Report is disabled to enhance boottime with HFPGA.
-	 */
-	s_cfg->PchPmDisableEnergyReport = 1;
-
 	s_cfg->PmcLpmS0ixSubStateEnableMask = get_supported_lpm_mask();
 }
 
@@ -420,7 +412,7 @@ static void soc_silicon_init_params(FSP_S_CONFIG *s_cfg,
 	/* Override settings per board if required. */
 	mainboard_update_soc_chip_config(config);
 
-	const void (*fill_fsps_params[])(FSP_S_CONFIG *s_cfg,
+	 void (*fill_fsps_params[])(FSP_S_CONFIG *s_cfg,
 			const struct soc_intel_meteorlake_config *config) = {
 		fill_fsps_lpss_params,
 		fill_fsps_cpu_params,

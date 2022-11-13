@@ -30,6 +30,10 @@
 #include <types.h>
 #include <version.h>
 
+#if ENV_X86
+#include <arch/ioapic.h>
+#endif
+
 static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp);
 
 u8 acpi_checksum(u8 *table, u32 length)
@@ -179,6 +183,22 @@ int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
 
 	return ioapic->length;
 }
+
+#if ENV_X86
+/* For a system with multiple I/O APICs it's required that the one potentially
+   routing i8259 via ExtNMI delivery calls this first to get GSI #0. */
+int acpi_create_madt_ioapic_from_hw(acpi_madt_ioapic_t *ioapic, u32 addr)
+{
+	static u32 gsi_base;
+	u32 my_base;
+	u8 id = get_ioapic_id((void *)(uintptr_t)addr);
+	u8 count = ioapic_get_max_vectors((void *)(uintptr_t)addr);
+
+	my_base = gsi_base;
+	gsi_base += count;
+	return acpi_create_madt_ioapic(ioapic, id, addr, my_base);
+}
+#endif
 
 int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 		u8 bus, u8 source, u32 gsirq, u16 flags)
@@ -868,7 +888,7 @@ void acpi_create_einj(acpi_einj_t *einj, uintptr_t addr, u8 actions)
 
 	printk(BIOS_DEBUG, "%s einj_smi = %p\n", __func__, einj_smi);
 	memset(einj_smi, 0, sizeof(acpi_einj_smi_t));
-	tat = (acpi_einj_trigger_table_t *)(einj_smi + sizeof(acpi_einj_smi_t));
+	tat = (acpi_einj_trigger_table_t *)((uint8_t *)einj_smi + sizeof(acpi_einj_smi_t));
 	tat->header_size =  16;
 	tat->revision =  0;
 	tat->table_size =  sizeof(acpi_einj_trigger_table_t) +

@@ -101,7 +101,7 @@ int cpu_have_cpuid(void);
 
 static inline bool cpu_is_amd(void)
 {
-	return CONFIG(CPU_AMD_AGESA) || CONFIG(CPU_AMD_PI) || CONFIG(SOC_AMD_COMMON);
+	return CONFIG(CPU_AMD_PI) || CONFIG(SOC_AMD_COMMON);
 }
 
 static inline bool cpu_is_intel(void)
@@ -147,23 +147,18 @@ struct per_cpu_segment_data {
 	struct cpu_info *cpu_info;
 };
 
+enum cb_err set_cpu_info(unsigned int index, struct device *cpu);
+
 static inline struct cpu_info *cpu_info(void)
 {
-/* We use a #if because we don't want to mess with the &s below. */
-#if CONFIG(CPU_INFO_V2)
 	struct cpu_info *ci = NULL;
 
-	__asm__("mov %%gs:%c[offset], %[ci]"
+	__asm__ __volatile__("mov %%gs:%c[offset], %[ci]"
 		: [ci] "=r" (ci)
 		: [offset] "i" (offsetof(struct per_cpu_segment_data, cpu_info))
 	);
 
 	return ci;
-#else
-	char s;
-	uintptr_t info = ALIGN_UP((uintptr_t)&s, CONFIG_STACK_SIZE) - sizeof(struct cpu_info);
-	return (struct cpu_info *)info;
-#endif /* CPU_INFO_V2 */
 }
 
 struct cpuinfo_x86 {
