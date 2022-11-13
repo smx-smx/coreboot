@@ -70,6 +70,14 @@ ifeq ($(CONFIG_USE_ME_CLEANER),y)
 		$(patsubst "%,%,$(patsubst %",%,$(CONFIG_ME_CLEANER_ARGS))) > \
 		$(obj)/me_cleaner.log
 endif
+ifeq ($(CONFIG_ME_SOFT_DISABLE),y)
+	printf "    IFDTOOL    Setting HAP Flag\n"
+	$(objutil)/ifdtool/ifdtool \
+		$(IFDTOOL_USE_CHIPSET) \
+		-M 1 \
+		-O $(obj)/coreboot.pre \
+		$(obj)/coreboot.pre
+endif
 ifeq ($(CONFIG_HAVE_GBE_BIN),y)
 	printf "    IFDTOOL    gbe.bin -> coreboot.pre\n"
 	$(objutil)/ifdtool/ifdtool \

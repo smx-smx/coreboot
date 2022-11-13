@@ -74,6 +74,17 @@ config ME_REGION_ALLOW_CPU_READ_ACCESS
 	 through LOCK_MANAGEMENT_ENGINE config. This config is enabled when the CSE
 	 Lite SKU is integrated.
 
+config ME_SOFT_DISABLE
+	bool "Disables Intel ME by setting the HAP flag"
+	depends on HAVE_IFD_BIN
+	default n
+	help
+		Use ifdtool to disable Intel ME by setting the HAP flag
+		in the Intel Flash Descriptor.
+
+		You will need an unlocked flash descriptor (or a external SPI programmer) to flash
+		the resulting image
+
 config USE_ME_CLEANER
 	bool "Strip down the Intel ME/TXE firmware"
 	depends on HAVE_ME_BIN && (NORTHBRIDGE_INTEL_IRONLAKE || \
